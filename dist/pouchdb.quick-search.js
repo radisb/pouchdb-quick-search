@@ -940,11 +940,13 @@ var lunr = function (config, nolang) {
 
   idx.pipeline.add(
     lunr.trimmer,
-    lunr.stopWordFilter
+    lunr.stopWordFilter,
+    lunr.stemmer
   );
-  if (!nolang)
-    idx.pipeline.add(lunr.stemmer);
-
+  if (nolang) {
+    idx.pipeline.remove(lunr.stemmer);
+    idx.pipeline.remove(lunr.trimmer);
+  }
   if (config) config.call(idx, idx)
 
   return idx
