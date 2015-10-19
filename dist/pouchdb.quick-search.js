@@ -126,8 +126,8 @@ exports.search = utils.toPromise(function (opts, callback) {
 
   var index = indexes[language];
   if (!index) {
-    index = indexes[language] = lunr();
-    if (language !== 'en') {
+    index = indexes[language] = lunr(null, language == 'none');
+    if (language !== 'en' && language !== 'none') {
       index.use(global.lunr[language]);
     }
   }
@@ -935,14 +935,15 @@ function unwrap(promise, func, value) {
  * @returns {lunr.Index}
  *
  */
-var lunr = function (config) {
+var lunr = function (config, nolang) {
   var idx = new lunr.Index
 
   idx.pipeline.add(
     lunr.trimmer,
-    lunr.stopWordFilter,
-    lunr.stemmer
-  )
+    lunr.stopWordFilter
+  );
+  if (!nolang)
+    idx.pipeline.add(lunr.stemmer);
 
   if (config) config.call(idx, idx)
 
